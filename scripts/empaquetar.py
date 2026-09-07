@@ -1,20 +1,26 @@
 #!/usr/bin/env python3
-"""Valida una carpeta de trabajo y la empaqueta como paquete.zip.
+"""Valida un banco de preguntas y lo empaqueta como ZIP, un JSON por pregunta.
 
-    python3 scripts/empaquetar.py salida/mi-paquete
-    python3 scripts/empaquetar.py salida/mi-paquete -o entrega/lectura-01.zip
-    python3 scripts/empaquetar.py salida/mi-paquete --solo-validar
+    python3 scripts/empaquetar.py salida/mi-entrega
+    python3 scripts/empaquetar.py salida/mi-entrega -o entrega/sociales.zip
+    python3 scripts/empaquetar.py salida/mi-entrega --solo-validar
 
-La carpeta de trabajo tiene la forma que exige el estándar:
+La carpeta de trabajo contiene un árbol `banco/` con la forma que describe
+`referencias/formato-paquete.md`:
 
-    mi-paquete/
-    ├── paquete.json      (obligatorio)
-    ├── imagenes/         (solo si hay bloques de tipo imagen)
-    └── fuentes/          (solo si alguna pregunta declara "fuentes")
+    salida/mi-entrega/
+    └── banco/
+        └── ciencias-sociales/
+            ├── cs-155.json      una pregunta por archivo
+            ├── grupos/cs-g-002.json
+            ├── imagenes/cs-170-1.png
+            └── fuentes/cuadernillo-2024.pdf
 
-La validación la hace `scripts/vendor/validar.js`, la implementación de
-referencia del estándar `preguntas-icfes` — no una reimplementación. Requiere
-Node.js. Los errores bloquean el empaquetado; los avisos no.
+El ZIP reproduce ese árbol, así que se descomprime encima de un banco
+existente sin tocar nada más. La validación envuelve cada área en un paquete
+sintético y la pasa por `scripts/vendor/validar.js`, la implementación de
+referencia del estándar. Requiere Node.js. Los errores bloquean el
+empaquetado; los avisos no.
 """
 
 from __future__ import annotations
@@ -22,18 +28,19 @@ from __future__ import annotations
 import argparse
 import json
 import os
+import re
 import shutil
 import subprocess
 import sys
+import tempfile
 import zipfile
 from collections import Counter
 from pathlib import Path
 
-RAIZ = Path(__file__).resolve().parent
-VALIDADOR = RAIZ / "vendor" / "validar.js"
+sys.path.insert(0, str(Path(__file__).resolve().parent))
+import banco as B  # noqa: E402
 
-EXT_IMAGEN = {".png", ".jpg", ".jpeg", ".webp"}
-EXT_FUENTE = {".pdf"}
+VALIDADOR = Path(__file__).resolve().parent / "vendor" / "validar.js"
 
 DRIVER = """
 import { validarPaquete } from %(url)s;
@@ -44,128 +51,124 @@ process.stdout.write(JSON.stringify(validarPaquete(paquete, opciones)));
 """
 
 
-def _archivos(carpeta: Path) -> list[str]:
-    if not carpeta.is_dir():
-        return []
-    return sorted(p.name for p in carpeta.iterdir() if p.is_file())
-
-
-def validar(dir_trabajo: Path, paquete: dict) -> list[dict]:
-    """Corre el validador de referencia. Devuelve la lista de errores."""
+def validar(area: B.Area) -> list[dict]:
+    """Corre el validador de referencia sobre un área envuelta en un paquete."""
     if shutil.which("node") is None:
         raise SystemExit(
             "error: no se encontró Node.js, necesario para correr el validador de\n"
             "referencia del estándar (scripts/vendor/validar.js). Instálalo, o usa\n"
             "--sin-validar bajo tu propia responsabilidad."
         )
-    entorno = dict(
-        os.environ,
-        RUTA_PAQUETE=str(dir_trabajo / "paquete.json"),
-        OPCIONES_VALIDACION=json.dumps({
-            "imagenesDisponibles": _archivos(dir_trabajo / "imagenes"),
-            "fuentesDisponibles": _archivos(dir_trabajo / "fuentes"),
-        }),
-    )
-    proc = subprocess.run(
-        ["node", "--input-type=module", "-e",
-         DRIVER % {"url": json.dumps(VALIDADOR.as_uri())}],
-        capture_output=True, text=True, env=entorno,
-    )
+    envoltura = area.envolver(f"Validación de {area.slug}")
+    with tempfile.NamedTemporaryFile("w", suffix=".json", encoding="utf-8",
+                                     delete=False) as f:
+        json.dump(envoltura, f, ensure_ascii=False)
+        ruta = f.name
+    try:
+        proc = subprocess.run(
+            ["node", "--input-type=module", "-e",
+             DRIVER % {"url": json.dumps(VALIDADOR.as_uri())}],
+            capture_output=True, text=True,
+            env=dict(os.environ, RUTA_PAQUETE=ruta, OPCIONES_VALIDACION=json.dumps({
+                "imagenesDisponibles": area.archivos("imagenes"),
+                "fuentesDisponibles": area.archivos("fuentes"),
+            })),
+        )
+    finally:
+        os.unlink(ruta)
     if proc.returncode != 0:
         raise SystemExit(f"error: el validador falló:\n{proc.stderr.strip()}")
     return json.loads(proc.stdout)["errores"]
 
 
-def _bloques(paquete: dict):
-    """Todos los bloques de contenido del paquete, vengan de donde vengan."""
-    for grupo in paquete.get("grupos", []):
-        yield from grupo.get("contexto", [])
-        for entrada in grupo.get("banco", []):
+def _bloques(area: B.Area):
+    for g in area.grupos:
+        yield from g.get("contexto", [])
+        for entrada in g.get("banco", []):
             yield from entrada.get("contenido", [])
-    for p in paquete.get("preguntas", []):
+    for p in area.preguntas:
         yield from p.get("contexto", [])
         yield from p.get("enunciado", [])
         for o in p.get("opciones", []):
             yield from o.get("contenido", [])
 
 
-def revisar(dir_trabajo: Path, paquete: dict) -> tuple[list[str], list[str]]:
-    """Comprobaciones propias de Saber 11.° que el estándar no cubre.
-
-    Devuelve (errores, avisos). Los errores son de empaquetado; el resto son
-    señales de calidad que conviene mirar antes de entregar.
-    """
+def revisar(area: B.Area) -> tuple[list[str], list[str]]:
+    """Comprobaciones propias del banco y de Saber 11.° que el estándar no cubre."""
     errores, avisos = [], []
-    preguntas = paquete.get("preguntas", [])
+    ids = {str(d.get("id")) for d in area.preguntas + area.grupos}
 
-    for carpeta, exts in (("imagenes", EXT_IMAGEN), ("fuentes", EXT_FUENTE)):
-        for nombre in _archivos(dir_trabajo / carpeta):
+    # El banco localiza cada pregunta por su nombre de archivo: deben coincidir.
+    for d in area.preguntas + area.grupos:
+        ruta = Path(d["_ruta"])
+        if ruta.stem != str(d.get("id")):
+            errores.append(f"{ruta.name}: el archivo debería llamarse "
+                           f"{d.get('id')}.json, como su id.")
+
+    for sub, exts in (("imagenes", B.EXT_IMAGEN), ("fuentes", B.EXT_FUENTE)):
+        for nombre in area.archivos(sub):
             if Path(nombre).suffix.lower() not in exts:
-                errores.append(
-                    f"{carpeta}/{nombre}: extensión no admitida por el estándar "
-                    f"({', '.join(sorted(exts))})."
-                )
+                errores.append(f"{area.slug}/{sub}/{nombre}: extensión no admitida "
+                               f"({', '.join(sorted(exts))}).")
 
-    # Lo que empieza por "_" es material de trabajo declarado como tal (p. ej.
-    # _specs/, las especificaciones de las imágenes): queda fuera sin avisar.
-    for extra in sorted(p.name for p in dir_trabajo.iterdir()
-                        if p.name not in {"paquete.json", "imagenes", "fuentes"}
-                        and not p.name.startswith(("_", "."))):
-        avisos.append(f"'{extra}' no entra al ZIP: solo van paquete.json, "
-                      f"imagenes/ y fuentes/.")
+    # Convención del banco: la imagen se llama <id-de-quien-la-usa>-N.ext
+    for nombre in area.archivos("imagenes"):
+        m = re.match(r"^(.+)-(\d+)$", Path(nombre).stem)
+        if not m or m.group(1) not in ids:
+            avisos.append(f"imagenes/{nombre}: el nombre no empieza por el id de una "
+                          f"pregunta o grupo del área, como pide la convención "
+                          f"<id>-N.png.")
 
-    usadas = {b["archivo"] for b in _bloques(paquete) if b.get("tipo") == "imagen"}
-    for huerfana in sorted(set(_archivos(dir_trabajo / "imagenes")) - usadas):
+    usadas = {b["archivo"] for b in _bloques(area) if b.get("tipo") == "imagen"}
+    for huerfana in sorted(set(area.archivos("imagenes")) - usadas):
         avisos.append(f"imagenes/{huerfana} no la referencia ninguna pregunta.")
 
-    sin_alt = [b["archivo"] for b in _bloques(paquete)
-               if b.get("tipo") == "imagen" and not b.get("descripcion_accesible")]
-    for archivo in sorted(set(sin_alt)):
+    for archivo in sorted({b["archivo"] for b in _bloques(area)
+                           if b.get("tipo") == "imagen"
+                           and not b.get("descripcion_accesible")}):
         avisos.append(f"imagenes/{archivo} no tiene 'descripcion_accesible'.")
 
-    claves = Counter()
-    for p in preguntas:
-        for o in p.get("opciones", []):
-            if o.get("es_correcta"):
-                claves[o.get("id")] += 1
-    if claves and len(preguntas) >= 8:
-        techo = max(claves.values())
-        if techo > sum(claves.values()) * 0.45:
-            reparto = ", ".join(f"{k}: {v}" for k, v in sorted(claves.items()))
-            avisos.append(
-                f"la clave está desbalanceada ({reparto}). El manual del ICFES pide "
-                f"repartirla proporcionalmente entre las posiciones."
-            )
-
-    for p in preguntas:
+    for p in area.preguntas:
+        pid = p.get("id")
+        declarada = p.get("version_estandar")
+        if not declarada:
+            avisos.append(f"{pid}: sin 'version_estandar'. Un archivo suelto es lo "
+                          f"único que tiene para autodescribirse; debería declarar "
+                          f"{B.version_minima(p)}.")
+        if not p.get("procedencia"):
+            avisos.append(f"{pid}: sin 'procedencia'. Una pregunta generada debe "
+                          f"declararse como 'ia_generada'.")
+        # Saber 11.° usa 4 opciones, salvo las partes 2 a 5 de Inglés, que usan 3
+        # por diseño oficial: en esa área 3 no es un defecto y no se avisa.
+        admitidas = {3, 4} if area.slug == "ingles" else {4}
         n = len(p.get("opciones", []))
-        if p.get("tipo_item", "estandar") == "estandar" and n and n != 4:
-            avisos.append(f"{p.get('id')}: tiene {n} opciones; Saber 11.° usa 4 "
-                          f"(salvo las partes 2 a 5 de Inglés, que usan 3).")
+        if p.get("tipo_item", "estandar") == "estandar" and n and n not in admitidas:
+            avisos.append(f"{pid}: tiene {n} opciones; aquí se esperan "
+                          f"{' o '.join(str(x) for x in sorted(admitidas))}.")
 
-    for p in preguntas:
-        proc = p.get("procedencia") or {}
-        if not proc:
-            avisos.append(f"{p.get('id')}: sin 'procedencia'. Una pregunta generada "
-                          f"debe declararse como 'ia_generada'.")
+    claves = Counter(o.get("id") for p in area.preguntas
+                     for o in p.get("opciones", []) if o.get("es_correcta"))
+    if claves and len(area.preguntas) >= 8 and max(claves.values()) > sum(claves.values()) * 0.45:
+        reparto = ", ".join(f"{k}: {v}" for k, v in sorted(claves.items()))
+        avisos.append(f"la clave está desbalanceada ({reparto}). El manual del ICFES "
+                      f"pide repartirla proporcionalmente entre las posiciones.")
 
     return errores, avisos
 
 
-def empaquetar(dir_trabajo: Path, salida: Path) -> Path:
+def empaquetar(raiz_banco: Path, salida: Path) -> Path:
     salida.parent.mkdir(parents=True, exist_ok=True)
     with zipfile.ZipFile(salida, "w", zipfile.ZIP_DEFLATED, compresslevel=9) as z:
-        z.write(dir_trabajo / "paquete.json", "paquete.json")
-        for carpeta in ("imagenes", "fuentes"):
-            for nombre in _archivos(dir_trabajo / carpeta):
-                z.write(dir_trabajo / carpeta / nombre, f"{carpeta}/{nombre}")
+        for archivo in sorted(raiz_banco.rglob("*")):
+            if archivo.is_file() and not archivo.name.startswith("."):
+                z.write(archivo, str(archivo.relative_to(raiz_banco.parent)))
     return salida
 
 
 def main() -> int:
     ap = argparse.ArgumentParser(
-        description="Valida y empaqueta un paquete de preguntas ICFES.")
-    ap.add_argument("carpeta", type=Path, help="carpeta de trabajo con paquete.json")
+        description="Valida un banco de preguntas y lo empaqueta como ZIP.")
+    ap.add_argument("carpeta", type=Path, help="carpeta de trabajo que contiene banco/")
     ap.add_argument("-o", "--salida", type=Path,
                     help="ruta del .zip (por defecto, <carpeta>.zip)")
     ap.add_argument("--solo-validar", action="store_true",
@@ -174,50 +177,47 @@ def main() -> int:
                     help="empaqueta sin correr el validador (no recomendado)")
     args = ap.parse_args()
 
-    dir_trabajo = args.carpeta.resolve()
-    ruta_json = dir_trabajo / "paquete.json"
-    if not ruta_json.is_file():
-        print(f"error: no existe {ruta_json}", file=sys.stderr)
-        return 1
+    raiz = args.carpeta.resolve() / "banco"
     try:
-        paquete = json.loads(ruta_json.read_text(encoding="utf-8"))
-    except json.JSONDecodeError as e:
-        print(f"error: paquete.json no es JSON válido — línea {e.lineno}, "
-              f"columna {e.colno}: {e.msg}", file=sys.stderr)
+        areas = B.cargar(raiz)
+    except B.ErrorBanco as e:
+        print(f"error: {e}", file=sys.stderr)
         return 1
 
-    errores_est = [] if args.sin_validar else validar(dir_trabajo, paquete)
-    errores_zip, avisos = revisar(dir_trabajo, paquete)
+    n_err = 0
+    for area in areas:
+        errores = [] if args.sin_validar else validar(area)
+        errores_banco, avisos = revisar(area)
+        for e in errores:
+            donde = f"[{e['pregunta_id']}] " if e.get("pregunta_id") else ""
+            print(f"✗ {area.slug}: {donde}{e['campo']}: {e['mensaje']}", file=sys.stderr)
+        for e in errores_banco:
+            print(f"✗ {area.slug}: {e}", file=sys.stderr)
+        for a in avisos:
+            print(f"⚠ {area.slug}: {a}", file=sys.stderr)
+        n_err += len(errores) + len(errores_banco)
 
-    for e in errores_est:
-        donde = f"[{e['pregunta_id']}] " if e.get("pregunta_id") else ""
-        print(f"✗ {donde}{e['campo']}: {e['mensaje']}", file=sys.stderr)
-    for e in errores_zip:
-        print(f"✗ {e}", file=sys.stderr)
-    for a in avisos:
-        print(f"⚠ {a}", file=sys.stderr)
-
-    if errores_est or errores_zip:
-        print(f"\n{len(errores_est) + len(errores_zip)} error(es): el paquete NO se "
-              f"empaquetó.", file=sys.stderr)
+    if n_err:
+        print(f"\n{n_err} error(es): no se empaquetó nada.", file=sys.stderr)
         return 1
 
-    n_preg = len(paquete.get("preguntas", []))
-    n_grupos = len(paquete.get("grupos", []))
-    n_img = len(_archivos(dir_trabajo / "imagenes"))
-    resumen = (f"{n_preg} pregunta(s), {n_grupos} grupo(s), {n_img} imagen(es)"
-               f" — estándar v{paquete.get('version_estandar')}")
-
+    for area in areas:
+        print(f"✓ {area.slug}: {len(area.preguntas)} pregunta(s), "
+              f"{len(area.grupos)} grupo(s), {len(area.archivos('imagenes'))} imagen(es)")
     if args.solo_validar:
-        print(f"✓ paquete válido: {resumen}")
         return 0
 
-    salida = args.salida or dir_trabajo.with_suffix(".zip")
-    empaquetar(dir_trabajo, salida)
-    print(f"✓ paquete válido: {resumen}")
-    print(f"✓ {salida}  ({salida.stat().st_size / 1024:.1f} KB)")
+    salida = args.salida or args.carpeta.resolve().with_suffix(".zip")
+    empaquetar(raiz, salida)
+    total = sum(len(a.preguntas) for a in areas)
+    print(f"✓ {salida}  ({salida.stat().st_size / 1024:.1f} KB, "
+          f"{total} archivos de pregunta)")
     return 0
 
 
 if __name__ == "__main__":
-    sys.exit(main())
+    try:
+        sys.exit(main())
+    except B.ErrorBanco as e:
+        print(f"error: {e}", file=sys.stderr)
+        sys.exit(1)

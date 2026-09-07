@@ -1,0 +1,25 @@
+{
+  "id": "cn-g-001",
+  "contexto": [
+    {
+      "tipo": "texto",
+      "texto": "Un grupo de estudiantes quiere establecer de qué depende el periodo de un péndulo, es decir, el tiempo que tarda en completar una oscilación. Cuelgan un cuerpo de un hilo, lo separan siempre 10° de la vertical y lo sueltan. Repiten la medición con cinco cuerpos de distinta masa y con dos longitudes de cuerda. Los resultados aparecen en la gráfica."
+    },
+    {
+      "tipo": "imagen",
+      "archivo": "cn-g-001-1.png",
+      "descripcion_accesible": "Gráfica de dispersión del periodo, en segundos, frente a la masa del cuerpo suspendido, en gramos. Serie de cuerda de 40 cm: 10 g y 1,27 s; 20 g y 1,26 s; 30 g y 1,28 s; 40 g y 1,27 s; 50 g y 1,29 s. Serie de cuerda de 80 cm: 10 g y 1,79 s; 20 g y 1,80 s; 30 g y 1,78 s; 40 g y 1,81 s; 50 g y 1,80 s."
+    }
+  ],
+  "tipo": "contexto_compartido",
+  "metadata_pedagogica": {
+    "competencia": "Indagación",
+    "componente": "Componente físico",
+    "afirmacion": "Observa y relaciona patrones en los datos para evaluar las predicciones.",
+    "evidencia": "Interpreta y analiza datos representados en texto, gráficas, dibujos, diagramas o tablas.",
+    "estandar_asociado": "Establezco relaciones entre las diferentes fuerzas que actúan sobre los cuerpos en reposo o en movimiento rectilíneo uniforme y establezco condiciones para conservar la energía mecánica.",
+    "que_evalua": "La lectura de una gráfica de dispersión con dos series para decidir de qué variable depende el periodo de un péndulo."
+  },
+  "procedencia_contenido": "ia_generada",
+  "verificado_contenido": false
+}

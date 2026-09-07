@@ -11,6 +11,9 @@ las otras cuatro: se organiza en **siete partes**, y a los evaluados se les
 clasifica por nivel del **MCER**. Aun así, el formato exige los 6 campos de
 metadata pedagógica, así que abajo se fija cómo llenarlos.
 
+**El número que encabeza cada afirmación y evidencia («1.», «2.3») es el
+localizador de la tabla oficial, no parte del valor: no lo copies al JSON.**
+
 ## Las siete partes
 
 | Parte | % | Preguntas | Qué evalúa | Formato | Opciones |
@@ -37,7 +40,7 @@ metadata pedagógica, así que abajo se fija cómo llenarlos.
 | 4, 7 | Grupo `texto_con_blancos`. El pasaje completo, con los blancos marcados inline como `(16)_______`, va una sola vez en `grupos[].contexto`. Cada pregunta es `tipo_item: "miembro_texto_con_blancos"`, sin `enunciado` propio, con `numero_blanco` y sus opciones. |
 | 5, 6 | Grupo `contexto_compartido`: el artículo en `grupos[].contexto`, y cada pregunta con su `enunciado` y opciones propias. |
 
-Detalles del formato en `formato-paquete.md`.
+Detalles del formato en `formato-banco.md`.
 
 ## Metadata pedagógica para Inglés
 
@@ -90,3 +93,7 @@ habilidad. Ejemplos:
 La **parte 2 casi siempre la exige**: el aviso es una imagen (un letrero, una
 etiqueta, una señal). Genérala con el tipo `aviso` de `imagenes.md`, y pon en
 `descripcion_accesible` el texto del letrero.
+
+> El vocabulario de arriba es el **literal de Saber 11.°**. Si el encargo es
+> alimentar un banco existente, copia primero el que ese banco ya use: ver
+> «Integrarse a un banco existente» en `formato-banco.md`.

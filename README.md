@@ -2,7 +2,7 @@
 
 # skill-preguntas-saber-11
 
-**Skill de Claude Code que escribe preguntas tipo ICFES Saber 11.° a partir de la documentación oficial y las entrega como paquete ZIP validado.**
+**Skill de Claude Code que escribe preguntas tipo ICFES Saber 11.° a partir de la documentación oficial y las entrega como ZIP validado, un archivo JSON por pregunta.**
 
 [![Licencia: MIT](https://img.shields.io/badge/licencia-MIT-blue.svg)](LICENSE)
 [![Formato](https://img.shields.io/badge/formato-preguntas--icfes%20v1.4.0-6e40c9.svg)](https://github.com/Riskbreaker2077/preguntas-icfes)
@@ -22,10 +22,24 @@ Las preguntas pueden ser de solo texto o de **imagen + texto**: la skill
 genera el PNG del estímulo (gráficas, diagramas, planos cartesianos, avisos)
 sin depender de que alguien aporte la imagen.
 
-La salida es un **`paquete.zip`** en el formato abierto
-[`preguntas-icfes`](https://github.com/Riskbreaker2077/preguntas-icfes),
-validado antes de escribirse contra la implementación de referencia del propio
-estándar.
+La salida es un ZIP con **un archivo JSON por pregunta**, en el formato abierto
+[`preguntas-icfes`](https://github.com/Riskbreaker2077/preguntas-icfes) y con la
+organización de
+[`banco-preguntas-icfes`](https://github.com/Riskbreaker2077/banco-preguntas-icfes):
+
+```
+banco/ciencias-sociales/
+├── cs-155.json          una pregunta por archivo, el nombre es su id
+├── cs-156.json
+├── grupos/cs-g-002.json  estímulo compartido por varias preguntas
+└── imagenes/cs-170-1.png prefijadas con el id de quien las usa
+```
+
+Así el ZIP se descomprime encima de un banco existente sin colisiones. Se
+valida antes de escribirse contra la implementación de referencia del propio
+estándar: cada área se envuelve en un paquete sintético y se comprueban las
+13 invariantes, incluidas las referencias cruzadas entre preguntas, grupos e
+imágenes.
 
 ## Qué la hace distinta de pedirle preguntas a un chat
 
@@ -41,8 +55,11 @@ estándar.
 - **Procedencia honesta.** Todo lo que genera queda marcado como
   `ia_generada` y `verificado: false`. Marcar una pregunta como verificada es
   potestad de quien la revisó.
-- **Se valida, no se promete.** El ZIP no se escribe si el paquete incumple
-  cualquiera de las 13 invariantes del estándar.
+- **Se valida, no se promete.** El ZIP no se escribe si alguna pregunta
+  incumple cualquiera de las 13 invariantes del estándar.
+- **Se integra en vez de imponerse.** Si la entrega va a un banco existente,
+  la skill continúa su numeración y copia el vocabulario que ese banco ya usa,
+  en lugar de introducir uno nuevo en paralelo.
 
 ## Instalación
 
@@ -79,20 +96,26 @@ de cómo quedó repartido.
 ### A mano, sin la skill
 
 ```bash
+# reservar ids libres de un área (continúa la numeración que ya tenga)
+python3 scripts/siguiente_id.py banco/ciencias-sociales --cuantos 20
+python3 scripts/siguiente_id.py banco/ciencias-sociales --grupo
+
 # generar las imágenes de una carpeta de trabajo
-python3 scripts/imagen.py --lote salida/mi-paquete/_specs salida/mi-paquete/imagenes
+python3 scripts/imagen.py --lote salida/mi-entrega/_specs \
+    salida/mi-entrega/banco/ciencias-sociales/imagenes
 
 # validar sin escribir el ZIP
-python3 scripts/empaquetar.py salida/mi-paquete --solo-validar
+python3 scripts/empaquetar.py salida/mi-entrega --solo-validar
 
 # validar y empaquetar
-python3 scripts/empaquetar.py salida/mi-paquete -o entrega/simulacro.zip
+python3 scripts/empaquetar.py salida/mi-entrega -o entrega/simulacro.zip
 ```
 
-Pruébalo con el ejemplo incluido:
+Pruébalo con el ejemplo incluido, o contra un banco entero:
 
 ```bash
-python3 scripts/empaquetar.py ejemplos/ciencias-pendulo --solo-validar
+python3 scripts/empaquetar.py ejemplos/banco-ciencias-naturales --solo-validar
+python3 scripts/empaquetar.py ~/banco-preguntas-icfes --solo-validar
 ```
 
 ## Las cinco áreas
@@ -129,8 +152,10 @@ matplotlib, sin cabezas de navegador, sin red.
 | `aviso` | Letreros y señales (parte 2 de Inglés, textos discontinuos) |
 
 Especificación de cada uno en [`referencias/imagenes.md`](referencias/imagenes.md).
-Cuando el estímulo es tabular, la skill usa el bloque nativo `tabla` del
-formato en vez de una imagen: se lee con lector de pantalla y no se pixela.
+Cada archivo se llama `<id>-N.png` con el id de la pregunta o del grupo que lo
+usa, así que dos preguntas nunca se pisan una imagen. Cuando el estímulo es
+tabular, la skill usa el bloque nativo `tabla` del formato en vez de una
+imagen: se lee con lector de pantalla y no se pixela.
 
 ## Mapa del repo
 
@@ -139,10 +164,12 @@ formato en vez de una imagen: se lee con lector de pantalla y no se pixela.
 | `SKILL.md` | La skill: flujo, reglas innegociables, mapa de referencias |
 | `referencias/` | Taxonomías por área, reglas de construcción de ítems, contrato del formato, guía de imágenes |
 | `scripts/imagen.py` | Genera PNG desde una especificación JSON |
-| `scripts/empaquetar.py` | Valida y arma el ZIP |
+| `scripts/empaquetar.py` | Valida un banco y arma el ZIP |
+| `scripts/banco.py` | Lee un banco en disco y lo envuelve para validarlo |
+| `scripts/siguiente_id.py` | Próximo id libre de un área |
 | `scripts/vendor/validar.js` | Validador de referencia del estándar (copia verbatim, MIT) |
-| `plantillas/paquete.json` | Esqueleto de un paquete |
-| `ejemplos/ciencias-pendulo/` | Paquete completo y válido: un grupo con imagen, una pregunta con tabla |
+| `plantillas/` | Esqueleto de una pregunta y de un grupo |
+| `ejemplos/banco-ciencias-naturales/` | Banco completo y válido: un grupo con imagen, una pregunta con tabla |
 | `Base_MD/` | Los 20 documentos oficiales del ICFES en Markdown (~1,1 MB) |
 | `Base/` | Los PDF originales (no versionados) |
 

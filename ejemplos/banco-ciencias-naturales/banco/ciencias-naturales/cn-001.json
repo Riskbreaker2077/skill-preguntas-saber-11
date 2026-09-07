@@ -1,0 +1,71 @@
+{
+  "id": "cn-001",
+  "version_estandar": "1.2.0",
+  "que_evalua": "Dificultad media. Distinguir, sobre dos series de datos, cuál variable modifica el periodo y cuál lo deja igual.",
+  "contexto": [],
+  "enunciado": [
+    {
+      "tipo": "texto",
+      "texto": "De acuerdo con los datos obtenidos, ¿cuál conclusión sobre el periodo del péndulo es válida?"
+    }
+  ],
+  "opciones": [
+    {
+      "id": "A",
+      "contenido": [
+        {
+          "tipo": "texto",
+          "texto": "El periodo aumenta al aumentar la masa y se mantiene igual al cambiar la longitud."
+        }
+      ],
+      "es_correcta": false,
+      "justificacion": "Incorrecta: invierte el papel de las dos variables. Dentro de cada serie el periodo se mantiene entre 1,26 s y 1,29 s aunque la masa se multiplique por cinco, mientras que al pasar de 40 cm a 80 cm sí cambia."
+    },
+    {
+      "id": "B",
+      "contenido": [
+        {
+          "tipo": "texto",
+          "texto": "El periodo cambia con la longitud de la cuerda y se mantiene igual al cambiar la masa."
+        }
+      ],
+      "es_correcta": true,
+      "justificacion": "Correcta: los cinco puntos de cada serie quedan a la misma altura pese a que la masa va de 10 g a 50 g, y las dos series están separadas entre sí (≈1,27 s frente a ≈1,80 s). La única variable que desplaza el periodo es la longitud."
+    },
+    {
+      "id": "C",
+      "contenido": [
+        {
+          "tipo": "texto",
+          "texto": "El periodo disminuye al aumentar la longitud de la cuerda y aumenta con la masa."
+        }
+      ],
+      "es_correcta": false,
+      "justificacion": "Incorrecta: lee la relación con la longitud al revés. La serie de 80 cm está por encima de la de 40 cm, de modo que al alargar la cuerda el periodo aumenta, no disminuye."
+    },
+    {
+      "id": "D",
+      "contenido": [
+        {
+          "tipo": "texto",
+          "texto": "El periodo se duplica cuando la longitud de la cuerda se duplica, sin importar la masa."
+        }
+      ],
+      "es_correcta": false,
+      "justificacion": "Incorrecta: supone proporcionalidad directa. Al duplicar la longitud de 40 cm a 80 cm el periodo pasa de ≈1,27 s a ≈1,80 s, es decir, se multiplica por 1,4 aproximadamente, no por 2."
+    }
+  ],
+  "grado": "11",
+  "prueba": "saber11",
+  "procedencia": {
+    "contenido": "ia_generada",
+    "clasificacion": "ia_generada",
+    "respuesta_correcta": "ia_generada"
+  },
+  "verificado": {
+    "contenido": false,
+    "clasificacion": false,
+    "respuesta_correcta": false
+  },
+  "grupo_id": "cn-g-001"
+}

@@ -1,55 +1,129 @@
-# El formato de salida: `preguntas-icfes`
+# El formato de salida: un archivo JSON por pregunta
 
 Contrato de datos completo:
 <https://github.com/Riskbreaker2077/preguntas-icfes>
 (especificación en `docs/especificacion.md`, esquemas en `schema/v1/`).
 
-Esta skill produce paquetes de la **versión 1.4.0** del estándar y los valida
-con la implementación de referencia vendorizada en `scripts/vendor/validar.js`.
+Cada pregunta se guarda en **su propio archivo**, con la forma que define
+`schema/v1/pregunta.schema.json`. Es la misma organización del banco
+[`banco-preguntas-icfes`](https://github.com/Riskbreaker2077/banco-preguntas-icfes),
+de modo que el ZIP que produce la skill se descomprime encima de un banco
+existente sin tocar nada más.
 
-## Estructura del ZIP
+## Estructura de la salida
 
 ```
-paquete.zip
-├── paquete.json      ← obligatorio
-├── imagenes/         ← solo si hay bloques de tipo imagen
-│   └── grafica-consumo.png
-└── fuentes/          ← solo si alguna pregunta declara "fuentes"
-    └── cuadernillo-2024.pdf
+salida/<nombre>/            ← carpeta de trabajo
+├── _specs/                 ← especificaciones de las imágenes (no entra al ZIP)
+└── banco/                  ← esto es lo único que se empaqueta
+    └── ciencias-sociales/
+        ├── cs-155.json     ← una pregunta por archivo, el nombre es su id
+        ├── cs-156.json
+        ├── grupos/
+        │   └── cs-g-002.json
+        ├── imagenes/
+        │   └── cs-170-1.png
+        └── fuentes/
+            └── cuadernillo-2024.pdf
 ```
 
-Extensiones admitidas: `.png`, `.jpg`, `.jpeg`, `.webp` en `imagenes/`;
-`.pdf` en `fuentes/`. Nada más entra al ZIP.
+| Ruta | Qué va ahí |
+|---|---|
+| `<area>/<id>.json` | Una pregunta. **El nombre del archivo es su `id`**; el empaquetador lo exige. |
+| `<area>/grupos/<id>.json` | Un grupo, con id de la forma `<prefijo>-g-NNN`. |
+| `<area>/imagenes/<id>-N.png` | Prefijadas con el id de la pregunta **o del grupo** que las usa, para que nunca colisionen. `.png`, `.jpg`, `.jpeg` o `.webp`. |
+| `<area>/fuentes/<slug>.pdf` | El PDF de origen, cuando la pregunta declara `fuentes`. Se comparte entre las preguntas del mismo PDF. |
 
-## El paquete
+### Áreas y prefijos de id
 
-```json
-{
-  "estandar": "preguntas-icfes",
-  "version_estandar": "1.4.0",
-  "nombre": "Saber 11.° · Matemáticas · Estadística (10 preguntas)",
-  "area": "Matemáticas",
-  "grupos": [],
-  "preguntas": []
-}
-```
-
-| Campo | Obligatorio | Qué es |
+| Área | Carpeta | Prefijo |
 |---|---|---|
-| `estandar` | sí | Literal `"preguntas-icfes"`. |
-| `version_estandar` | sí | SemVer. Usa `"1.4.0"`. |
-| `nombre` | sí | Nombre legible del paquete. |
-| `area` | no | Área o asignatura, texto libre. |
-| `preguntas` | sí | Mínimo 1. Los `id` son únicos en el paquete. |
-| `grupos` | no | Preguntas que comparten estímulo. `id` únicos. |
+| Matemáticas | `matematicas/` | `mt` |
+| Lectura Crítica | `lenguaje/` | `lg` |
+| Sociales y Ciudadanas | `ciencias-sociales/` | `cs` |
+| Ciencias Naturales | `ciencias-naturales/` | `cn` |
+| Inglés | `ingles/` | `in` |
 
-No se admite ningún otro campo de primer nivel.
+Los ids se numeran con tres dígitos y son consecutivos dentro del área.
+`scripts/siguiente_id.py` da el próximo libre sin que tengas que mirar la
+carpeta:
+
+```bash
+python3 scripts/siguiente_id.py <area> --cuantos 20
+python3 scripts/siguiente_id.py <area> --grupo
+```
+
+## No hay `paquete.json`
+
+El banco guarda preguntas sueltas; el paquete envolvente es otra cosa, que
+se ensambla al exportar hacia una plataforma. Por eso **cada pregunta declara
+su propio `version_estandar`**: fuera de un paquete, el archivo no tiene
+ninguna otra forma de decir qué versión del estándar necesita quien lo lea.
+
+No es la versión con la que se escribió, sino la mínima que exigen los campos
+que la pregunta realmente usa:
+
+| Si la pregunta usa… | `version_estandar` mínimo |
+|---|---|
+| solo los campos básicos | `1.0.0` |
+| `grado`, `prueba`, `procedencia`, `verificado` o `fuentes` | `1.1.0` |
+| `grupo_id`, `tipo_item`, `nivel_mcer`, `valor`, o un número de opciones distinto de 4 | `1.2.0` |
+
+`scripts/empaquetar.py` avisa si falta, y el validador rechaza la pregunta si
+lo declarado es menor que lo que exigen sus campos. `scripts/banco.py` calcula
+el valor correcto con `version_minima()`.
+
+## Cómo se valida
+
+El estándar valida **paquetes**, no archivos sueltos. Para validar un banco,
+`scripts/empaquetar.py` envuelve cada área en un paquete sintético y se lo
+pasa al validador de referencia — la misma técnica de `validar-banco.mjs` en
+el repo del banco. Las 13 invariantes se comprueban igual, incluidas las
+referencias cruzadas entre preguntas, grupos e imágenes.
+
+```bash
+python3 scripts/empaquetar.py salida/<nombre> --solo-validar
+python3 scripts/empaquetar.py salida/<nombre> -o entrega/paquete.zip
+```
+
+## Integrarse a un banco existente
+
+Antes de escribir nada, **mira qué vocabulario usa ya el área de destino** y
+cópialo. El valor del formato está en que un consumidor agrupe por cadena
+exacta, así que dos redacciones de la misma competencia rompen justo lo que
+el banco intenta ganar.
+
+```bash
+python3 -c "import json,glob,collections;\
+qs=[json.load(open(f)) for f in glob.glob('banco/ciencias-sociales/*.json')];\
+print(collections.Counter(q.get('componente') for q in qs))"
+```
+
+Lo que hay hoy en `banco-preguntas-icfes` viene de cuadernillos de **Evaluar
+para Avanzar**, así que usa el vocabulario de esa prueba y no el de Saber
+11.°:
+
+| Área del banco | `componente` en uso |
+|---|---|
+| `ciencias-sociales` | Sujeto, sociedad y Estado · Participación y responsabilidad democrática · Ambiente y desarrollo · Pluralidad, identidad y valoración de las diferencias · Convivencia y paz · Historia y cultura |
+| `ciencias-naturales` | Entorno vivo · Entorno físico · Procesos vivos · Procesos físicos · Procesos químicos · Ciencia, tecnología y sociedad |
+| `ingles` | *(ninguno: la metadata vive en el grupo, y las preguntas solo declaran `nivel_mcer`)* |
+
+Además, el banco escribe `competencia` en **Title Case** («Pensamiento
+Social») y `afirmacion`/`evidencia` **sin el número** que las encabeza en las
+tablas oficiales.
+
+Las referencias por área de esta skill traen, en cambio, el vocabulario
+**literal de Saber 11.°**, que es el correcto para un paquete autónomo. Si el
+encargo es alimentar el banco, pregunta cuál de los dos usar: no son
+intercambiables y la elección cambia los veinte archivos.
 
 ## Una pregunta estándar
 
 ```json
 {
-  "id": "mat-est-001",
+  "id": "mt-001",
+  "version_estandar": "1.1.0",
   "competencia": "Interpretación y representación",
   "componente": "Estadística",
   "afirmacion": "Comprende y transforma la información cuantitativa y esquemática presentada en distintos formatos.",
@@ -67,7 +141,7 @@ No se admite ningún otro campo de primer nivel.
   "verificado": { "contenido": false, "clasificacion": false, "respuesta_correcta": false },
   "contexto": [
     { "tipo": "texto", "texto": "La gráfica muestra el consumo de agua…" },
-    { "tipo": "imagen", "archivo": "grafica-consumo.png",
+    { "tipo": "imagen", "archivo": "mt-001-1.png",
       "descripcion_accesible": "Gráfica de barras agrupadas con cuatro sectores y dos cuencas." }
   ],
   "enunciado": [
@@ -126,7 +200,7 @@ orden que haga falta.
 ```json
 { "tipo": "texto", "texto": "…" }
 
-{ "tipo": "imagen", "archivo": "grafica.png",
+{ "tipo": "imagen", "archivo": "cs-155-1.png",
   "descripcion_accesible": "…" }
 
 { "tipo": "tabla",
@@ -134,33 +208,39 @@ orden que haga falta.
   "filas": [["18-28 años", "42"], ["29-45 años", "58"]] }
 ```
 
-- `archivo` es solo el nombre, sin carpeta, y el archivo debe existir en `imagenes/`.
+- `archivo` es solo el nombre, sin carpeta, y debe existir en `<area>/imagenes/`
+  con la forma `<id>-N.ext`, donde `<id>` es el de la pregunta o del grupo que lo usa.
 - Toda fila de una tabla tiene tantas celdas como encabezados. Todas las celdas son *strings*.
 - **Si el estímulo es tabular, usa el bloque `tabla`, no una imagen de tabla.**
 
 ## Grupos
 
 Un grupo es el mecanismo para que varias preguntas compartan un estímulo sin
-duplicarlo. Tres tipos:
+duplicarlo. Vive en su propio archivo, `<area>/grupos/<prefijo>-g-NNN.json`,
+y cada miembro lo referencia por `grupo_id`. Tres tipos:
 
 ### `contexto_compartido`
 
 Un texto, caso o gráfica que sostiene varias preguntas — el caso normal en
 Lectura Crítica, Sociales y las partes 5 y 6 de Inglés.
 
+`lenguaje/grupos/lg-g-001.json`:
+
 ```json
-"grupos": [{
-  "id": "lc-texto-01",
+{
+  "id": "lg-g-001",
   "tipo": "contexto_compartido",
   "contexto": [{ "tipo": "texto", "texto": "«El oficio de vivir»…" }],
   "metadata_pedagogica": {
     "competencia": "Competencia lectora", "componente": "Texto continuo literario",
     "afirmacion": "…", "evidencia": "…", "estandar_asociado": "…", "que_evalua": "…"
-  }
-}]
+  },
+  "procedencia_contenido": "ia_generada",
+  "verificado_contenido": false
+}
 ```
 
-Cada miembro lleva `"grupo_id": "lc-texto-01"`, su `enunciado` y sus
+Cada miembro lleva `"grupo_id": "lg-g-001"`, su `enunciado` y sus
 `opciones`; `tipo_item` se omite o vale `"estandar"`. Si el grupo declara
 `metadata_pedagogica`, los miembros que no traigan la suya la heredan — útil
 cuando todas comparten componente y afirmación, y cada una difiere solo en
@@ -171,8 +251,10 @@ cuando todas comparten componente y afirmación, y cada una difiere solo en
 Emparejamiento: N descripciones contra un banco común de opciones — la parte 1
 de Inglés.
 
+`ingles/grupos/in-g-001.json`:
+
 ```json
-{ "id": "en-p1-01", "tipo": "banco_opciones",
+{ "id": "in-g-001", "tipo": "banco_opciones",
   "contexto": [{ "tipo": "texto", "texto": "Match each description with a word." }],
   "banco": [
     { "id": "A", "contenido": [{ "tipo": "texto", "texto": "glasses" }] },
@@ -188,8 +270,10 @@ Cada miembro: `"tipo_item": "miembro_banco_opciones"`, `grupo_id`, `enunciado`
 
 *Cloze*: un pasaje con espacios numerados — partes 4 y 7 de Inglés.
 
+`ingles/grupos/in-g-002.json`:
+
 ```json
-{ "id": "en-p4-01", "tipo": "texto_con_blancos",
+{ "id": "in-g-002", "tipo": "texto_con_blancos",
   "contexto": [{ "tipo": "texto",
     "texto": "Last summer I (16)_______ to the coast with my family." }] }
 ```
@@ -215,16 +299,16 @@ en el examen concreto del estudiante:
 
 ```json
 { "tipo": "texto",
-  "texto": "Last summer I ({{numero:en-p4-016}})_______ to the coast." }
+  "texto": "Last summer I ({{numero:in-016}})_______ to the coast." }
 ```
 
-El `id` referenciado debe existir en `paquete.preguntas`. No hay escape para
-`{{` literal.
+El `id` referenciado debe existir como archivo de pregunta en la misma área.
+No hay escape para `{{` literal.
 
 ## Invariantes que se validan
 
-Un solo error rechaza el paquete completo. `scripts/empaquetar.py` las corre
-todas antes de escribir el ZIP:
+Un solo error rechaza el área completa. `scripts/empaquetar.py` las corre
+todas, área por área, antes de escribir el ZIP:
 
 1. Cada pregunta con `opciones` tiene al menos 2 y **exactamente una** correcta. Una `miembro_banco_opciones` no lleva opciones; su `respuesta_pool_id` existe en el banco y no es la entrada de ejemplo.
 2. Toda opción tiene `justificacion` no vacía, incluidas las incorrectas.
@@ -238,4 +322,8 @@ todas antes de escribir el ZIP:
 10. `numero_blanco` único dentro de su grupo.
 11. `nivel_mcer` del catálogo MCER; `valor` mayor que 0.
 12. `version_estandar` de una pregunta (si está) ≥ la que exigen sus campos.
-13. Todo `{{numero:ID}}` referencia un `id` existente.
+13. Todo `{{numero:ID}}` referencia un `id` de pregunta existente en el área.
+
+A lo que añade `scripts/empaquetar.py`, propio del banco: el nombre de cada
+archivo coincide con el `id` que declara, y cada imagen se llama `<id>-N.ext`
+con el id de la pregunta o grupo que la usa.

@@ -5,11 +5,13 @@ description: Genera preguntas tipo ICFES Saber 11.° de Matemáticas, Lectura Cr
 
 # Preguntas tipo ICFES Saber 11.°
 
-Produce un **`paquete.zip`** en el formato abierto
-[`preguntas-icfes`](https://github.com/Riskbreaker2077/preguntas-icfes):
-un `paquete.json` con las preguntas y su metadata pedagógica, más las imágenes
-que necesiten. Todo se apoya en la documentación oficial del ICFES convertida
-a Markdown en `Base_MD/`.
+Produce un **ZIP con un archivo JSON por pregunta**, en el formato abierto
+[`preguntas-icfes`](https://github.com/Riskbreaker2077/preguntas-icfes) y con
+la organización del banco
+[`banco-preguntas-icfes`](https://github.com/Riskbreaker2077/banco-preguntas-icfes),
+de modo que se descomprima encima de un banco existente sin colisiones. Todo
+se apoya en la documentación oficial del ICFES convertida a Markdown en
+`Base_MD/`.
 
 ## Qué preguntar antes de empezar
 
@@ -19,6 +21,7 @@ Solo lo que no puedas inferir del encargo. Con una sola ronda basta:
 2. **Cuántas preguntas.**
 3. **Enfoque** — ¿una competencia, componente o tema concreto, o distribución realista según los porcentajes oficiales del área?
 4. **Imágenes** — ¿alguna pregunta debe llevar estímulo gráfico? Si el encargo no lo dice, propón el número que salga natural del área y sigue.
+5. **Destino** — ¿es una entrega autónoma, o va a sumarse a un banco existente? Si va a un banco, necesitas su ruta: de ahí salen los ids libres y el vocabulario que hay que copiar.
 
 Si el encargo ya trae todo eso, no preguntes: ponte a escribir.
 
@@ -59,20 +62,34 @@ clave entre A, B, C y D.
 
 Decide qué preguntas comparten estímulo: un texto de Lectura Crítica que
 sostiene cuatro preguntas es **un grupo**, no cuatro copias del texto. Ver
-«Grupos» en `referencias/formato-paquete.md`.
+«Grupos» en `referencias/formato-banco.md`.
 
 ### 3. Monta la carpeta de trabajo
 
 ```
-salida/<nombre-del-paquete>/
-├── paquete.json
-├── _specs/              ← especificaciones de las imágenes (no entran al ZIP)
-├── imagenes/
-└── fuentes/             ← solo si transcribes de un PDF oficial
+salida/<nombre>/
+├── _specs/                        ← especificaciones de las imágenes (fuera del ZIP)
+└── banco/
+    └── <area-slug>/
+        ├── <id>.json              ← una pregunta por archivo, el nombre es su id
+        ├── grupos/<id>.json
+        ├── imagenes/<id>-N.png
+        └── fuentes/               ← solo si transcribes de un PDF oficial
 ```
 
-Parte de `plantillas/paquete.json`. El contrato completo está en
-`referencias/formato-paquete.md`.
+Los slugs de área y los prefijos de id (`ciencias-sociales`/`cs`,
+`lenguaje`/`lg`, `matematicas`/`mt`, `ciencias-naturales`/`cn`, `ingles`/`in`)
+están en `referencias/formato-banco.md`. Reserva los ids de una vez:
+
+```bash
+python3 scripts/siguiente_id.py <carpeta-del-area> --cuantos 20
+python3 scripts/siguiente_id.py <carpeta-del-area> --grupo
+```
+
+Si la entrega va a sumarse a un banco existente, apúntalo a **ese** banco para
+que la numeración continúe la suya. Parte de `plantillas/pregunta.json` y
+`plantillas/grupo.json`. El contrato completo está en
+`referencias/formato-banco.md`.
 
 ### 4. Genera las imágenes
 
@@ -82,8 +99,13 @@ cuándo usar un bloque `tabla` en vez de una imagen, y cómo escribir la
 `descripcion_accesible`.
 
 ```bash
-python3 scripts/imagen.py --lote salida/<paquete>/_specs salida/<paquete>/imagenes
+python3 scripts/imagen.py --lote salida/<nombre>/_specs \
+    salida/<nombre>/banco/<area>/imagenes
 ```
+
+Cada imagen se llama `<id>-N.png` con el id de la pregunta o del grupo que la
+usa. Nombra las especificaciones igual, para que `--lote` produzca el nombre
+correcto sin renombrar nada.
 
 Mira los PNG que generaste antes de seguir. Una gráfica con etiquetas
 encimadas o una escala mal elegida invalida la pregunta.
@@ -91,19 +113,21 @@ encimadas o una escala mal elegida invalida la pregunta.
 ### 5. Valida y empaqueta
 
 ```bash
-python3 scripts/empaquetar.py salida/<paquete>
+python3 scripts/empaquetar.py salida/<nombre>
 ```
 
-Corre el validador de referencia del propio estándar. Los errores (`✗`)
-bloquean el ZIP; los avisos (`⚠`) señalan problemas de calidad —clave
-desbalanceada, imagen sin descripción accesible, imagen huérfana— que debes
-resolver, no ignorar.
+Envuelve cada área en un paquete sintético y la pasa por el validador de
+referencia del propio estándar. Los errores (`✗`) bloquean el ZIP; los avisos
+(`⚠`) señalan problemas de calidad —clave desbalanceada, imagen sin
+descripción accesible, `version_estandar` sin declarar— que debes resolver,
+no ignorar.
 
 ### 6. Entrega
 
-Da la ruta del `.zip` y un resumen breve: cuántas preguntas, cómo quedaron
-repartidas por competencia y componente, cuáles llevan imagen, y **qué quedó
-pendiente de revisión humana**.
+Da la ruta del `.zip` y un resumen breve: cuántas preguntas, qué rango de ids
+ocupan, cómo quedaron repartidas por competencia y componente, cuáles llevan
+imagen, y **qué quedó pendiente de revisión humana**. Si va a un banco, di
+que se descomprime desde su raíz.
 
 ## Reglas innegociables
 
@@ -120,8 +144,18 @@ preguntas. Si el encargo pide transcribir ítems oficiales, eso es otra tarea:
 transcríbelos marcando la procedencia real y guarda el PDF en `fuentes/`.
 
 **Metadata literal.** `competencia`, `componente`, `afirmacion` y `evidencia`
-se copian palabra por palabra de la referencia del área. Parafrasearlas rompe
-el valor del paquete: un consumidor agrupa por cadena exacta.
+se copian palabra por palabra. Parafrasearlas rompe el valor del paquete: un
+consumidor agrupa por cadena exacta. **De dónde se copian depende del
+destino**: de la referencia del área si la entrega es autónoma, o del
+vocabulario que el banco ya use si va a sumarse a uno. Los dos existen y no
+son intercambiables — mira qué hay en el destino antes de escribir, y si no
+está claro, pregunta. Ver «Integrarse a un banco existente» en
+`referencias/formato-banco.md`.
+
+**`version_estandar` en cada pregunta.** Fuera de un paquete envolvente, el
+archivo suelto no tiene otra forma de autodescribirse. Es la versión mínima
+que exigen los campos que usa, no la de hoy: `scripts/banco.py` la calcula con
+`version_minima()`.
 
 **Una justificación por opción, y específica.** La de la clave explica el
 razonamiento; la de cada distractor nombra el error concreto que comete quien
@@ -146,7 +180,9 @@ paquete usable de uno que un docente tiene que rehacer.
 | `scripts/imagen.py` | Genera PNG desde una especificación JSON |
 | `scripts/empaquetar.py` | Valida y arma el ZIP |
 | `scripts/vendor/validar.js` | Validador de referencia del estándar (copia verbatim) |
-| `plantillas/paquete.json` | Esqueleto comentado de un paquete |
-| `ejemplos/` | Un paquete completo y válido, con imagen y grupo |
+| `scripts/banco.py` | Lee un banco en disco y lo envuelve para validarlo |
+| `scripts/siguiente_id.py` | Próximo id libre de un área |
+| `plantillas/` | Esqueleto de una pregunta y de un grupo |
+| `ejemplos/` | Un banco completo y válido, con imagen y grupo |
 | `Base_MD/` | Los 20 documentos oficiales del ICFES en Markdown |
 | `Base/` | Los PDF originales (no versionados; ver `Base_MD/MANIFEST.md`) |

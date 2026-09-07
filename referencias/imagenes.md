@@ -17,27 +17,30 @@ del `contenido` de una opción.
 ## El flujo
 
 ```bash
-# 1. escribes la especificación de la imagen
-cat > salida/mi-paquete/_specs/grafica-consumo.json
+# 1. escribes la especificación, nombrada como la imagen que produce
+cat > salida/mi-entrega/_specs/cs-170-1.json
 
-# 2. la generas
-python3 scripts/imagen.py salida/mi-paquete/_specs/grafica-consumo.json \
-                          salida/mi-paquete/imagenes/grafica-consumo.png
+# 2. la generas dentro de la carpeta de imágenes del área
+python3 scripts/imagen.py salida/mi-entrega/_specs/cs-170-1.json \
+    salida/mi-entrega/banco/ciencias-sociales/imagenes/cs-170-1.png
 
 # o todas de una vez
-python3 scripts/imagen.py --lote salida/mi-paquete/_specs salida/mi-paquete/imagenes
+python3 scripts/imagen.py --lote salida/mi-entrega/_specs \
+    salida/mi-entrega/banco/ciencias-sociales/imagenes
 
 # 3. la referencias en la pregunta
-#    { "tipo": "imagen", "archivo": "grafica-consumo.png",
+#    { "tipo": "imagen", "archivo": "cs-170-1.png",
 #      "descripcion_accesible": "…" }
 ```
 
-Guarda las especificaciones en `_specs/` dentro de la carpeta de trabajo:
-`empaquetar.py` no las mete al ZIP (solo avisa), y quedan como fuente
-editable de cada imagen.
+Guarda las especificaciones en `_specs/`, **fuera** de `banco/`: así quedan
+como fuente editable de cada imagen sin entrar al ZIP.
 
-Nombres de archivo en minúsculas, con guiones, descriptivos:
-`grafica-consumo-agua.png`, no `img1.png`.
+**El nombre no es libre.** Cada imagen se llama `<id>-N.ext`, donde `<id>` es
+el de la pregunta que la usa o el del grupo, si el estímulo es compartido:
+`cs-170-1.png`, `cs-g-004-1.png`. Así nunca colisionan dos imágenes de
+preguntas distintas, y se ve de un vistazo a quién pertenece cada archivo.
+`empaquetar.py` avisa si un nombre no sigue la convención.
 
 ## `descripcion_accesible`
 

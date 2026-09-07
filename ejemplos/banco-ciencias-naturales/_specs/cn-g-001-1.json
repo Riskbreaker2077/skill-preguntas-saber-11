@@ -1,0 +1,58 @@
+{
+  "tipo": "dispersion",
+  "titulo": "Periodo del péndulo frente a la masa",
+  "eje_x": "Masa del cuerpo suspendido (g)",
+  "eje_y": "Periodo (s)",
+  "series": [
+    {
+      "nombre": "Cuerda de 40 cm",
+      "puntos": [
+        [
+          10,
+          1.27
+        ],
+        [
+          20,
+          1.26
+        ],
+        [
+          30,
+          1.28
+        ],
+        [
+          40,
+          1.27
+        ],
+        [
+          50,
+          1.29
+        ]
+      ]
+    },
+    {
+      "nombre": "Cuerda de 80 cm",
+      "puntos": [
+        [
+          10,
+          1.79
+        ],
+        [
+          20,
+          1.8
+        ],
+        [
+          30,
+          1.78
+        ],
+        [
+          40,
+          1.81
+        ],
+        [
+          50,
+          1.8
+        ]
+      ]
+    }
+  ]
+}

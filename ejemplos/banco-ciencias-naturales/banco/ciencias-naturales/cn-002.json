@@ -1,0 +1,73 @@
+{
+  "id": "cn-002",
+  "version_estandar": "1.2.0",
+  "afirmacion": "Comprende que a partir de la investigación científica se construyen explicaciones sobre el mundo natural.",
+  "evidencia": "Analiza qué tipo de pregunta puede ser contestada a partir del contexto de una investigación científica.",
+  "que_evalua": "Dificultad media. Reconocer qué pregunta admite respuesta con las variables que el montaje efectivamente controló y midió.",
+  "contexto": [],
+  "enunciado": [
+    {
+      "tipo": "texto",
+      "texto": "¿Cuál de las siguientes preguntas se puede responder con los datos que recogieron los estudiantes?"
+    }
+  ],
+  "opciones": [
+    {
+      "id": "A",
+      "contenido": [
+        {
+          "tipo": "texto",
+          "texto": "¿Cómo cambia el periodo cuando se suelta el cuerpo desde un ángulo mayor?"
+        }
+      ],
+      "es_correcta": false,
+      "justificacion": "Incorrecta: el ángulo se mantuvo fijo en 10° en todas las mediciones. Una variable que no se hizo variar no puede sostener una conclusión sobre su efecto."
+    },
+    {
+      "id": "B",
+      "contenido": [
+        {
+          "tipo": "texto",
+          "texto": "¿Cómo cambia el periodo cuando se reemplaza el hilo por uno de otro material?"
+        }
+      ],
+      "es_correcta": false,
+      "justificacion": "Incorrecta: el montaje usó siempre el mismo hilo y solo cambió su longitud. El material nunca se registró como variable."
+    },
+    {
+      "id": "C",
+      "contenido": [
+        {
+          "tipo": "texto",
+          "texto": "¿Cómo cambia el periodo cuando se aumenta la masa del cuerpo suspendido?"
+        }
+      ],
+      "es_correcta": true,
+      "justificacion": "Correcta: la masa es la variable que los estudiantes manipularon deliberadamente, con cinco valores entre 10 g y 50 g, y para cada uno midieron el periodo. Los datos permiten responderla."
+    },
+    {
+      "id": "D",
+      "contenido": [
+        {
+          "tipo": "texto",
+          "texto": "¿Cómo cambia el periodo cuando el experimento se repite a mayor altura sobre el mar?"
+        }
+      ],
+      "es_correcta": false,
+      "justificacion": "Incorrecta: todas las mediciones se hicieron en el mismo lugar. Sin repetir el montaje en otra altura no hay datos que comparar."
+    }
+  ],
+  "grado": "11",
+  "prueba": "saber11",
+  "procedencia": {
+    "contenido": "ia_generada",
+    "clasificacion": "ia_generada",
+    "respuesta_correcta": "ia_generada"
+  },
+  "verificado": {
+    "contenido": false,
+    "clasificacion": false,
+    "respuesta_correcta": false
+  },
+  "grupo_id": "cn-g-001"
+}

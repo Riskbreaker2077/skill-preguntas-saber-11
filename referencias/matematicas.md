@@ -9,6 +9,9 @@ Los textos de `competencia`, `afirmacion` y `evidencia` de abajo se copian
 **literalmente** en el JSON. No los parafrasees: el valor del paquete está en
 que un consumidor pueda agrupar preguntas por la misma cadena exacta.
 
+**El número que encabeza cada afirmación y evidencia («1.», «2.3») es el
+localizador de la tabla oficial, no parte del valor: no lo copies al JSON.**
+
 ## Competencias, afirmaciones y evidencias
 
 | Competencia | Afirmación | Evidencias |
@@ -46,6 +49,10 @@ Toda pregunta se sitúa en uno de estos cuatro escenarios:
 - **Matemáticos o científicos** — situaciones abstractas, propias de las matemáticas; se asocian a contenidos no genéricos.
 
 Los tres primeros son contextos cotidianos: úsalos para contenidos genéricos.
+
+> El vocabulario de arriba es el **literal de Saber 11.°**. Si el encargo es
+> alimentar un banco existente, copia primero el que ese banco ya use: ver
+> «Integrarse a un banco existente» en `formato-banco.md`.
 
 ## Estándar asociado
 

@@ -16,6 +16,9 @@ en todas las preguntas de esta área:
 
 Lo que varía entre preguntas es la **afirmación** (el proceso cognitivo).
 
+**El número que encabeza cada afirmación y evidencia («1.», «2.3») es el
+localizador de la tabla oficial, no parte del valor: no lo copies al JSON.**
+
 ## Afirmaciones y evidencias
 
 | Afirmación (proceso) | Evidencias |
@@ -50,6 +53,10 @@ cinco categorías con que el ICFES reparte la prueba:
 | Discontinuo literario | 8 % |
 | Discontinuo informativo | 8 % |
 
+> El vocabulario de arriba es el **literal de Saber 11.°**. Si el encargo es
+> alimentar un banco existente, copia primero el que ese banco ya use: ver
+> «Integrarse a un banco existente» en `formato-banco.md`.
+
 ## Estándar asociado
 
 Cita un Estándar Básico de Competencias en Lenguaje (MEN), ciclo 10.º–11.º:
@@ -65,7 +72,7 @@ Cita un Estándar Básico de Competencias en Lenguaje (MEN), ciclo 10.º–11.º
 Un texto suele sostener **varias preguntas**. Eso es un grupo de tipo
 `contexto_compartido`: el texto va una sola vez en `grupos[].contexto` y cada
 pregunta miembro lleva su propio `enunciado` y sus opciones. Ver
-`formato-paquete.md`, sección «Grupos».
+`formato-banco.md`, sección «Grupos».
 
 Reglas propias del área:
 

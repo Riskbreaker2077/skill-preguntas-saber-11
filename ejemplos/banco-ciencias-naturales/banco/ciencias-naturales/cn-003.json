@@ -1,0 +1,105 @@
+{
+  "id": "cn-003",
+  "version_estandar": "1.1.0",
+  "competencia": "Uso comprensivo del conocimiento científico",
+  "componente": "Componente químico",
+  "afirmacion": "Asocia fenómenos naturales con conceptos propios del conocimiento científico.",
+  "evidencia": "Establece relaciones entre conceptos fisicoquímicos simples (separación de mezclas, solubilidad, gases ideales) con distintos fenómenos naturales.",
+  "estandar_asociado": "Relaciono la estructura de las moléculas orgánicas e inorgánicas con sus propiedades físicas y químicas y su capacidad de cambio químico.",
+  "que_evalua": "Dificultad media. Usar una tabla de solubilidad para predecir cuánto soluto precipita al enfriar una disolución.",
+  "contexto": [
+    {
+      "tipo": "texto",
+      "texto": "La tabla muestra la solubilidad de una sal en agua, expresada como la masa máxima de sal que se disuelve en 100 mL de agua a cada temperatura."
+    },
+    {
+      "tipo": "tabla",
+      "encabezados": [
+        "Temperatura (°C)",
+        "Solubilidad (g por 100 mL de agua)"
+      ],
+      "filas": [
+        [
+          "20",
+          "32"
+        ],
+        [
+          "40",
+          "45"
+        ],
+        [
+          "60",
+          "58"
+        ],
+        [
+          "80",
+          "71"
+        ]
+      ]
+    }
+  ],
+  "enunciado": [
+    {
+      "tipo": "texto",
+      "texto": "En 100 mL de agua a 80 °C se disuelven por completo 50 g de la sal y luego la disolución se enfría hasta 40 °C. ¿Qué ocurre con la sal?"
+    }
+  ],
+  "opciones": [
+    {
+      "id": "A",
+      "contenido": [
+        {
+          "tipo": "texto",
+          "texto": "Precipitan 5 g de sal y los 45 g restantes continúan disueltos en el agua."
+        }
+      ],
+      "es_correcta": true,
+      "justificacion": "Correcta: a 40 °C el agua admite 45 g por cada 100 mL. Como había 50 g disueltos, el exceso es 50 − 45 = 5 g, que ya no cabe en disolución y precipita."
+    },
+    {
+      "id": "B",
+      "contenido": [
+        {
+          "tipo": "texto",
+          "texto": "Precipitan 18 g de sal y los 32 g restantes continúan disueltos en el agua."
+        }
+      ],
+      "es_correcta": false,
+      "justificacion": "Incorrecta: usa la solubilidad de 20 °C (32 g) en vez de la de 40 °C. El enunciado dice que el enfriamiento se detiene en 40 °C."
+    },
+    {
+      "id": "C",
+      "contenido": [
+        {
+          "tipo": "texto",
+          "texto": "Toda la sal continúa disuelta, porque al enfriar no cambia la cantidad que el agua admite."
+        }
+      ],
+      "es_correcta": false,
+      "justificacion": "Incorrecta: la tabla muestra que la solubilidad de esta sal baja al bajar la temperatura, de 71 g a 80 °C hasta 45 g a 40 °C. Enfriar sí reduce lo que el agua admite."
+    },
+    {
+      "id": "D",
+      "contenido": [
+        {
+          "tipo": "texto",
+          "texto": "Precipita toda la sal, porque por debajo de 60 °C el compuesto deja de ser soluble."
+        }
+      ],
+      "es_correcta": false,
+      "justificacion": "Incorrecta: a 40 °C y a 20 °C la solubilidad sigue siendo alta (45 g y 32 g). Que la solubilidad disminuya no significa que se anule."
+    }
+  ],
+  "grado": "11",
+  "prueba": "saber11",
+  "procedencia": {
+    "contenido": "ia_generada",
+    "clasificacion": "ia_generada",
+    "respuesta_correcta": "ia_generada"
+  },
+  "verificado": {
+    "contenido": false,
+    "clasificacion": false,
+    "respuesta_correcta": false
+  }
+}

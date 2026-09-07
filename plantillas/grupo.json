@@ -1,0 +1,17 @@
+{
+  "id": "REEMPLAZAR-g-001",
+  "tipo": "contexto_compartido",
+  "contexto": [
+    { "tipo": "texto", "texto": "El estímulo que comparten las preguntas miembro: un texto, un caso, una fuente primaria." }
+  ],
+  "metadata_pedagogica": {
+    "competencia": "COPIAR LITERAL de referencias/<area>.md",
+    "componente": "COPIAR LITERAL de referencias/<area>.md",
+    "afirmacion": "COPIAR LITERAL, sin el número que la encabeza en la tabla",
+    "evidencia": "COPIAR LITERAL, sin el número que la encabeza en la tabla",
+    "estandar_asociado": "Estándar Básico de Competencias del MEN, ciclo 10.º-11.º, en primera persona.",
+    "que_evalua": "Texto libre: qué evalúan en conjunto las preguntas de este grupo."
+  },
+  "procedencia_contenido": "ia_generada",
+  "verificado_contenido": false
+}

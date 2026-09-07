@@ -1,0 +1,54 @@
+{
+  "id": "REEMPLAZAR-001",
+  "version_estandar": "1.1.0",
+  "competencia": "COPIAR LITERAL de referencias/<area>.md, o del vocabulario que ya use el banco destino",
+  "componente": "COPIAR LITERAL de referencias/<area>.md, o del vocabulario que ya use el banco destino",
+  "afirmacion": "COPIAR LITERAL, sin el número que la encabeza en la tabla",
+  "evidencia": "COPIAR LITERAL, sin el número que la encabeza en la tabla",
+  "estandar_asociado": "Estándar Básico de Competencias del MEN, ciclo 10.º-11.º, en primera persona.",
+  "que_evalua": "Texto libre: la tarea concreta de evaluación y el nivel de dificultad.",
+  "contexto": [
+    { "tipo": "texto", "texto": "La información necesaria para resolver la problemática. Array vacío ([]) si el enunciado se basta solo, o si el contexto lo aporta el grupo." }
+  ],
+  "enunciado": [
+    { "tipo": "texto", "texto": "La tarea de evaluación: qué debe hacer el evaluado. Redactada en positivo." }
+  ],
+  "opciones": [
+    {
+      "id": "A",
+      "contenido": [{ "tipo": "texto", "texto": "Opción A" }],
+      "es_correcta": false,
+      "justificacion": "Incorrecta: el error concreto que comete quien la elige."
+    },
+    {
+      "id": "B",
+      "contenido": [{ "tipo": "texto", "texto": "Opción B" }],
+      "es_correcta": true,
+      "justificacion": "Correcta: el razonamiento que lleva a ella, apoyado en el estímulo."
+    },
+    {
+      "id": "C",
+      "contenido": [{ "tipo": "texto", "texto": "Opción C" }],
+      "es_correcta": false,
+      "justificacion": "Incorrecta: el error concreto que comete quien la elige."
+    },
+    {
+      "id": "D",
+      "contenido": [{ "tipo": "texto", "texto": "Opción D" }],
+      "es_correcta": false,
+      "justificacion": "Incorrecta: el error concreto que comete quien la elige."
+    }
+  ],
+  "grado": "11",
+  "prueba": "saber11",
+  "procedencia": {
+    "contenido": "ia_generada",
+    "clasificacion": "ia_generada",
+    "respuesta_correcta": "ia_generada"
+  },
+  "verificado": {
+    "contenido": false,
+    "clasificacion": false,
+    "respuesta_correcta": false
+  }
+}

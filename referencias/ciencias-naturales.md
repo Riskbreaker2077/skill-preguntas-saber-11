@@ -5,6 +5,9 @@ Fuente: `Base_MD/Guia_orientacion_Saber11_2026-2.md` (§D) y
 
 **Prueba real:** 58 preguntas (29 + 29).
 
+**El número que encabeza cada afirmación y evidencia («1.», «2.3») es el
+localizador de la tabla oficial, no parte del valor: no lo copies al JSON.**
+
 ## Competencias, afirmaciones y evidencias
 
 ### Explicación de fenómenos (30 %)
@@ -65,6 +68,10 @@ que se generan preguntas y respuestas.
 | **Total** | **30 %** | **30 %** | **30 %** | **10 %** | **100 %** |
 
 Usa esta matriz cuando el paquete deba tener una distribución realista.
+
+> El vocabulario de arriba es el **literal de Saber 11.°**. Si el encargo es
+> alimentar un banco existente, copia primero el que ese banco ya use: ver
+> «Integrarse a un banco existente» en `formato-banco.md`.
 
 ## Estándar asociado
 

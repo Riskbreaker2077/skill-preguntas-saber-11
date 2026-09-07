@@ -5,6 +5,9 @@ Fuente: `Base_MD/Guia_orientacion_Saber11_2026-2.md` (§C) y
 
 **Prueba real:** 50 preguntas (25 + 25).
 
+**El número que encabeza cada afirmación y evidencia («1.», «2.3») es el
+localizador de la tabla oficial, no parte del valor: no lo copies al JSON.**
+
 ## Competencias, afirmaciones y evidencias
 
 | Competencia | Afirmación | Evidencias |
@@ -18,13 +21,35 @@ Fuente: `Base_MD/Guia_orientacion_Saber11_2026-2.md` (§C) y
 
 ## Componente
 
-La prueba no publica un enum de componentes como Ciencias Naturales. Usa el
-ámbito disciplinar del estímulo, en texto libre y consistente dentro del
-paquete. Valores recomendados:
+Saber 11.° **no publica un enum de componentes** para esta prueba, a
+diferencia de Ciencias Naturales. Hay dos vocabularios utilizables, y no son
+intercambiables: elige uno y sé consistente dentro del paquete.
+
+### Si el paquete es autónomo (Saber 11.°)
+
+Usa el ámbito disciplinar del estímulo:
 
 - **Sujeto, sociedad civil y Estado** — Constitución, ramas del poder, organismos de control, mecanismos de participación, derechos y deberes.
 - **Tiempo y espacio** — procesos históricos, geografía, territorio, dimensiones temporales de una problemática.
 - **Poder, economía y organizaciones sociales** — modelos económicos, actores sociales, conflictos, organización del trabajo.
+
+### Si vas a alimentar un banco existente
+
+Copia el vocabulario que ese banco ya tiene. `banco-preguntas-icfes` usa hoy
+los seis componentes de **Evaluar para Avanzar** y de los Estándares Básicos
+de Competencias Ciudadanas:
+
+- **Sujeto, sociedad y Estado**
+- **Participación y responsabilidad democrática**
+- **Ambiente y desarrollo**
+- **Pluralidad, identidad y valoración de las diferencias**
+- **Convivencia y paz**
+- **Historia y cultura**
+
+Ese banco escribe además `competencia` en Title Case («Pensamiento Social»,
+«Interpretación y Análisis de Perspectivas», «Pensamiento Reflexivo y
+Sistémico») y `afirmacion`/`evidencia` sin el número que las encabeza arriba.
+Ver «Integrarse a un banco existente» en `formato-banco.md`.
 
 ## Qué NO hace esta prueba
 
