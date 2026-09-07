@@ -477,8 +477,13 @@ def dibujar_esquema(spec: dict) -> Lienzo:
         bx, by = _borde(x2, y2, w2, h2, ang + math.pi, 9)
         l.flecha(ax, ay, bx, by, grosor=2)
         if f.get("etiqueta"):
-            l.texto((ax + bx) / 2, (ay + by) / 2 - 8, f["etiqueta"], tam=11,
-                    anclaje="md", color=GRIS)
+            # Desplazada perpendicular a la flecha, no hacia arriba: en una
+            # flecha diagonal, "arriba" cae justo sobre la línea y la tacha.
+            perp_x, perp_y = -math.sin(ang), math.cos(ang)
+            if perp_y > 0:  # siempre hacia el lado de arriba
+                perp_x, perp_y = -perp_x, -perp_y
+            l.texto((ax + bx) / 2 + perp_x * 18, (ay + by) / 2 + perp_y * 18,
+                    f["etiqueta"], tam=11, anclaje="mm", color=GRIS)
 
     return l
 
