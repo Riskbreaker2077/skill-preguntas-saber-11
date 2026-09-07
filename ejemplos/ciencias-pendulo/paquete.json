@@ -1,0 +1,192 @@
+{
+  "estandar": "preguntas-icfes",
+  "version_estandar": "1.4.0",
+  "nombre": "Ejemplo · Ciencias Naturales · Indagación y solubilidad (3 preguntas)",
+  "area": "Ciencias Naturales",
+  "grupos": [
+    {
+      "id": "cn-pendulo-01",
+      "tipo": "contexto_compartido",
+      "contexto": [
+        {
+          "tipo": "texto",
+          "texto": "Un grupo de estudiantes quiere establecer de qué depende el periodo de un péndulo, es decir, el tiempo que tarda en completar una oscilación. Cuelgan un cuerpo de un hilo, lo separan siempre 10° de la vertical y lo sueltan. Repiten la medición con cinco cuerpos de distinta masa y con dos longitudes de cuerda. Los resultados aparecen en la gráfica."
+        },
+        {
+          "tipo": "imagen",
+          "archivo": "periodo-vs-masa.png",
+          "descripcion_accesible": "Gráfica de dispersión del periodo, en segundos, frente a la masa del cuerpo suspendido, en gramos. Serie de cuerda de 40 cm: 10 g y 1,27 s; 20 g y 1,26 s; 30 g y 1,28 s; 40 g y 1,27 s; 50 g y 1,29 s. Serie de cuerda de 80 cm: 10 g y 1,79 s; 20 g y 1,80 s; 30 g y 1,78 s; 40 g y 1,81 s; 50 g y 1,80 s."
+        }
+      ],
+      "metadata_pedagogica": {
+        "competencia": "Indagación",
+        "componente": "Componente físico",
+        "afirmacion": "8. Observa y relaciona patrones en los datos para evaluar las predicciones.",
+        "evidencia": "8.1 Interpreta y analiza datos representados en texto, gráficas, dibujos, diagramas o tablas.",
+        "estandar_asociado": "Establezco relaciones entre las diferentes fuerzas que actúan sobre los cuerpos en reposo o en movimiento rectilíneo uniforme y establezco condiciones para conservar la energía mecánica.",
+        "que_evalua": "La lectura de una gráfica de dispersión con dos series para decidir de qué variable depende el periodo de un péndulo."
+      },
+      "procedencia_contenido": "ia_generada",
+      "verificado_contenido": false
+    }
+  ],
+  "preguntas": [
+    {
+      "id": "cn-001",
+      "grupo_id": "cn-pendulo-01",
+      "que_evalua": "Dificultad media. Distinguir, sobre dos series de datos, cuál variable modifica el periodo y cuál lo deja igual.",
+      "grado": "11",
+      "prueba": "saber11",
+      "procedencia": {
+        "contenido": "ia_generada",
+        "clasificacion": "ia_generada",
+        "respuesta_correcta": "ia_generada"
+      },
+      "verificado": {
+        "contenido": false,
+        "clasificacion": false,
+        "respuesta_correcta": false
+      },
+      "contexto": [],
+      "enunciado": [
+        { "tipo": "texto", "texto": "De acuerdo con los datos obtenidos, ¿cuál conclusión sobre el periodo del péndulo es válida?" }
+      ],
+      "opciones": [
+        {
+          "id": "A",
+          "contenido": [{ "tipo": "texto", "texto": "El periodo aumenta al aumentar la masa y se mantiene igual al cambiar la longitud." }],
+          "es_correcta": false,
+          "justificacion": "Incorrecta: invierte el papel de las dos variables. Dentro de cada serie el periodo se mantiene entre 1,26 s y 1,29 s aunque la masa se multiplique por cinco, mientras que al pasar de 40 cm a 80 cm sí cambia."
+        },
+        {
+          "id": "B",
+          "contenido": [{ "tipo": "texto", "texto": "El periodo cambia con la longitud de la cuerda y se mantiene igual al cambiar la masa." }],
+          "es_correcta": true,
+          "justificacion": "Correcta: los cinco puntos de cada serie quedan a la misma altura pese a que la masa va de 10 g a 50 g, y las dos series están separadas entre sí (≈1,27 s frente a ≈1,80 s). La única variable que desplaza el periodo es la longitud."
+        },
+        {
+          "id": "C",
+          "contenido": [{ "tipo": "texto", "texto": "El periodo disminuye al aumentar la longitud de la cuerda y aumenta con la masa." }],
+          "es_correcta": false,
+          "justificacion": "Incorrecta: lee la relación con la longitud al revés. La serie de 80 cm está por encima de la de 40 cm, de modo que al alargar la cuerda el periodo aumenta, no disminuye."
+        },
+        {
+          "id": "D",
+          "contenido": [{ "tipo": "texto", "texto": "El periodo se duplica cuando la longitud de la cuerda se duplica, sin importar la masa." }],
+          "es_correcta": false,
+          "justificacion": "Incorrecta: supone proporcionalidad directa. Al duplicar la longitud de 40 cm a 80 cm el periodo pasa de ≈1,27 s a ≈1,80 s, es decir, se multiplica por 1,4 aproximadamente, no por 2."
+        }
+      ]
+    },
+    {
+      "id": "cn-002",
+      "grupo_id": "cn-pendulo-01",
+      "afirmacion": "6. Comprende que a partir de la investigación científica se construyen explicaciones sobre el mundo natural.",
+      "evidencia": "6.1 Analiza qué tipo de pregunta puede ser contestada a partir del contexto de una investigación científica.",
+      "que_evalua": "Dificultad media. Reconocer qué pregunta admite respuesta con las variables que el montaje efectivamente controló y midió.",
+      "grado": "11",
+      "prueba": "saber11",
+      "procedencia": {
+        "contenido": "ia_generada",
+        "clasificacion": "ia_generada",
+        "respuesta_correcta": "ia_generada"
+      },
+      "verificado": {
+        "contenido": false,
+        "clasificacion": false,
+        "respuesta_correcta": false
+      },
+      "contexto": [],
+      "enunciado": [
+        { "tipo": "texto", "texto": "¿Cuál de las siguientes preguntas se puede responder con los datos que recogieron los estudiantes?" }
+      ],
+      "opciones": [
+        {
+          "id": "A",
+          "contenido": [{ "tipo": "texto", "texto": "¿Cómo cambia el periodo cuando se suelta el cuerpo desde un ángulo mayor?" }],
+          "es_correcta": false,
+          "justificacion": "Incorrecta: el ángulo se mantuvo fijo en 10° en todas las mediciones. Una variable que no se hizo variar no puede sostener una conclusión sobre su efecto."
+        },
+        {
+          "id": "B",
+          "contenido": [{ "tipo": "texto", "texto": "¿Cómo cambia el periodo cuando se reemplaza el hilo por uno de otro material?" }],
+          "es_correcta": false,
+          "justificacion": "Incorrecta: el montaje usó siempre el mismo hilo y solo cambió su longitud. El material nunca se registró como variable."
+        },
+        {
+          "id": "C",
+          "contenido": [{ "tipo": "texto", "texto": "¿Cómo cambia el periodo cuando se aumenta la masa del cuerpo suspendido?" }],
+          "es_correcta": true,
+          "justificacion": "Correcta: la masa es la variable que los estudiantes manipularon deliberadamente, con cinco valores entre 10 g y 50 g, y para cada uno midieron el periodo. Los datos permiten responderla."
+        },
+        {
+          "id": "D",
+          "contenido": [{ "tipo": "texto", "texto": "¿Cómo cambia el periodo cuando el experimento se repite a mayor altura sobre el mar?" }],
+          "es_correcta": false,
+          "justificacion": "Incorrecta: todas las mediciones se hicieron en el mismo lugar. Sin repetir el montaje en otra altura no hay datos que comparar."
+        }
+      ]
+    },
+    {
+      "id": "cn-003",
+      "competencia": "Uso comprensivo del conocimiento científico",
+      "componente": "Componente químico",
+      "afirmacion": "4. Asocia fenómenos naturales con conceptos propios del conocimiento científico.",
+      "evidencia": "4.7 Establece relaciones entre conceptos fisicoquímicos simples (separación de mezclas, solubilidad, gases ideales) con distintos fenómenos naturales.",
+      "estandar_asociado": "Relaciono la estructura de las moléculas orgánicas e inorgánicas con sus propiedades físicas y químicas y su capacidad de cambio químico.",
+      "que_evalua": "Dificultad media. Usar una tabla de solubilidad para predecir cuánto soluto precipita al enfriar una disolución.",
+      "grado": "11",
+      "prueba": "saber11",
+      "procedencia": {
+        "contenido": "ia_generada",
+        "clasificacion": "ia_generada",
+        "respuesta_correcta": "ia_generada"
+      },
+      "verificado": {
+        "contenido": false,
+        "clasificacion": false,
+        "respuesta_correcta": false
+      },
+      "contexto": [
+        {
+          "tipo": "texto",
+          "texto": "La tabla muestra la solubilidad de una sal en agua, expresada como la masa máxima de sal que se disuelve en 100 mL de agua a cada temperatura."
+        },
+        {
+          "tipo": "tabla",
+          "encabezados": ["Temperatura (°C)", "Solubilidad (g por 100 mL de agua)"],
+          "filas": [["20", "32"], ["40", "45"], ["60", "58"], ["80", "71"]]
+        }
+      ],
+      "enunciado": [
+        { "tipo": "texto", "texto": "En 100 mL de agua a 80 °C se disuelven por completo 50 g de la sal y luego la disolución se enfría hasta 40 °C. ¿Qué ocurre con la sal?" }
+      ],
+      "opciones": [
+        {
+          "id": "A",
+          "contenido": [{ "tipo": "texto", "texto": "Precipitan 5 g de sal y los 45 g restantes continúan disueltos en el agua." }],
+          "es_correcta": true,
+          "justificacion": "Correcta: a 40 °C el agua admite 45 g por cada 100 mL. Como había 50 g disueltos, el exceso es 50 − 45 = 5 g, que ya no cabe en disolución y precipita."
+        },
+        {
+          "id": "B",
+          "contenido": [{ "tipo": "texto", "texto": "Precipitan 18 g de sal y los 32 g restantes continúan disueltos en el agua." }],
+          "es_correcta": false,
+          "justificacion": "Incorrecta: usa la solubilidad de 20 °C (32 g) en vez de la de 40 °C. El enunciado dice que el enfriamiento se detiene en 40 °C."
+        },
+        {
+          "id": "C",
+          "contenido": [{ "tipo": "texto", "texto": "Toda la sal continúa disuelta, porque al enfriar no cambia la cantidad que el agua admite." }],
+          "es_correcta": false,
+          "justificacion": "Incorrecta: la tabla muestra que la solubilidad de esta sal baja al bajar la temperatura, de 71 g a 80 °C hasta 45 g a 40 °C. Enfriar sí reduce lo que el agua admite."
+        },
+        {
+          "id": "D",
+          "contenido": [{ "tipo": "texto", "texto": "Precipita toda la sal, porque por debajo de 60 °C el compuesto deja de ser soluble." }],
+          "es_correcta": false,
+          "justificacion": "Incorrecta: a 40 °C y a 20 °C la solubilidad sigue siendo alta (45 g y 32 g). Que la solubilidad disminuya no significa que se anule."
+        }
+      ]
+    }
+  ]
+}

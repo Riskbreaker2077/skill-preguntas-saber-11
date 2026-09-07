@@ -1,0 +1,11 @@
+# PDFs oficiales (62 MB). Se reobtienen con las fuentes de Base_MD/MANIFEST.md
+Base/
+
+# Salidas de trabajo
+salida/
+*.zip
+
+# Python
+__pycache__/
+*.pyc
+.venv/
